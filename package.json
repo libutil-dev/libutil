@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "private": true,
+  "nodeVersion": "22.14.0",
+  "packageManager": "pnpm@10.5.1",
+  "pnpm": {
+    "requiredScripts": ["build"]
+  },
+  "scripts": {
+    "prepub:000": "pnpm -r build",
+    "prepub:001": "changeset add",
+    "prepub:002": "git add --all .",
+    "prepub:003": "git commit -am changeset",
+    "prepub:004": "changeset version",
+    "prepub:005": "git commit -am version\\ bump",
+    "prepub": "set -e; for i in 0 1 2 3 4 5; do pnpm run -w prepub:00$i; done",
+    "pub": "changeset publish"
+  },
+  "devDependencies": {
+    "@libutil/esbuilder": "workspace:^",
+    "@biomejs/biome": "^1.9.4",
+    "@changesets/cli": "^2.28.1",
+    "@libconfig/biome": "^0.0.1",
+    "@libconfig/typescript": "^0.0.1",
+    "resolve-tspaths": "^0.8.23",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

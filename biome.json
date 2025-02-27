@@ -1,0 +1,18 @@
+{
+  "extends": ["@libconfig/biome"],
+  "files": {
+    "include": ["*.json", "pkgs/*/src/**", "pkgs/*/*.json"]
+  },
+  "overrides": [
+    {
+      "include": ["pkgs/@libutil/esbuilder/src/**/*.ts"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ]
+}

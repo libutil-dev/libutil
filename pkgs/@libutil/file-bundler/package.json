@@ -1,0 +1,26 @@
+{
+  "type": "module",
+  "name": "@libutil/file-bundler",
+  "version": "0.0.1",
+  "author": "Slee Woo",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": ["pkg/*"],
+  "bin": {
+    "file-bundler": "pkg/index.js"
+  },
+  "scripts": {
+    "build": "esbuilder -e src/index.ts -o pkg -s @/scripts/"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.0",
+    "handlebars": "^4.7.8",
+    "smol-toml": "^1.3.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
+  }
+}
