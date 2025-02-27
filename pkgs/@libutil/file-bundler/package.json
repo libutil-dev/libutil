@@ -12,7 +12,7 @@
     "file-bundler": "pkg/index.js"
   },
   "scripts": {
-    "build": "esbuilder -e src/index.ts -o pkg -s @/scripts/"
+    "build": "esbuilder src/index.ts -o pkg -s @/scripts/"
   },
   "dependencies": {
     "fast-glob": "^3.3.3",

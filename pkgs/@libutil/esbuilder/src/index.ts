@@ -14,7 +14,7 @@ const pkg = await import(resolve(process.cwd(), "./package.json"), {
   with: { type: "json" },
 }).then((e) => e.default);
 
-const { values } = parseArgs({
+const { values, positionals } = parseArgs({
   options: {
     config: {
       type: "string",
@@ -30,16 +30,12 @@ const { values } = parseArgs({
       multiple: true,
       short: "l",
     },
-    entrypoint: {
-      type: "string",
-      multiple: true,
-      short: "e",
-    },
     outdir: {
       type: "string",
       short: "o",
     },
   },
+  allowPositionals: true,
 });
 
 if (!values.outdir?.length) {
@@ -85,7 +81,7 @@ for (const pattern of scriptPatterns) {
 
   for (const script of scripts) {
     const text = root ? script.replace(root, "@") : script;
-    const spinner = ora().start(text);
+    const spinner = ora({ spinner: "dots2" }).start(text);
 
     await new Promise((resolve) => {
       // TODO: cross-platform support?
@@ -93,15 +89,17 @@ for (const pattern of scriptPatterns) {
         if (error) {
           spinner.fail();
           console.error(colors.red(error.message));
+          console.log(stdout);
+          console.error(stderr);
           process.exit(1);
-        }
-
-        if (stdout?.trim()) {
-          spinner.text = `${spinner.text}\n${colors.cyan(stdout)}`;
         }
 
         if (stderr?.trim()) {
           spinner.text = `${spinner.text}\n${colors.red(stderr)}`;
+        }
+
+        if (stdout?.trim()) {
+          spinner.text = `${spinner.text}\n${colors.cyan(stdout)}`;
         }
       });
 
@@ -124,28 +122,26 @@ const loader = values.loader?.length
     }, {})
   : undefined;
 
-for (const entryPoint of values.entrypoint || []) {
-  const spinner = ora({ interval: 1 }).start(entryPoint);
+const spinner = ora().start(positionals.join("; "));
 
-  try {
-    await build({
-      bundle: true,
-      platform: "node",
-      format: "esm",
-      packages: "external",
-      sourcemap: "linked",
-      logLevel: "error",
-      target: `node${nodeVersion}`,
-      ...customConfig,
-      // un-overridable options
-      entryPoints: [entryPoint],
-      outdir: values.outdir,
-      ...(loader ? { loader } : {}),
-    });
-    spinner.succeed();
-  } catch (error) {
-    spinner.fail();
-    console.error(error);
-    process.exit(1);
-  }
+try {
+  await build({
+    bundle: true,
+    platform: "node",
+    format: "esm",
+    packages: "external",
+    sourcemap: "linked",
+    logLevel: "error",
+    target: `node${nodeVersion}`,
+    ...customConfig,
+    // un-overridable options
+    entryPoints: positionals,
+    outdir: values.outdir,
+    ...(loader ? { loader } : {}),
+  });
+  spinner.succeed();
+} catch (error) {
+  spinner.fail();
+  console.error(error);
+  process.exit(1);
 }
