@@ -52,7 +52,7 @@ const nodeVersion = (pkg.nodeVersion || process.version)
   .split(".")[0];
 
 const customConfig = values.config
-  ? await import(values.config).then((e) => e.default)
+  ? await import(resolve(process.cwd(), values.config)).then((e) => e.default)
   : undefined;
 
 const root = await workspaceRoot();
