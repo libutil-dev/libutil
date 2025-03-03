@@ -1,5 +1,3 @@
-#!/usr/bin/env -S node --enable-source-maps --no-warnings=ExperimentalWarning
-
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { execFile } from "node:child_process";
@@ -47,8 +45,17 @@ const nodeVersion = (pkg.nodeVersion || process.version)
   .replace(/[^\d.]/g, "")
   .split(".")[0];
 
-const customConfig = values.config
-  ? await import(resolve(process.cwd(), values.config)).then((e) => e.default)
+const customConfigImport = values.config
+  ? () => {
+      const file = resolve(process.cwd(), values.config!);
+      return file.endsWith(".json")
+        ? import(file, { with: { type: "json" } })
+        : import(file);
+    }
+  : undefined;
+
+const customConfig = customConfigImport
+  ? await customConfigImport().then((e) => e.default)
   : undefined;
 
 const root = await workspaceRoot();
@@ -114,13 +121,15 @@ for (const pattern of scriptPatterns) {
   }
 }
 
-const loader = values.loader?.length
-  ? values.loader.reduce((a: Record<string, string>, e) => {
-      const [k, v] = e.split("=");
-      a[k] = v;
-      return a;
-    }, {})
-  : undefined;
+const loader = {
+  ...customConfig?.loader,
+  // commandline loaders should override loaders from the config
+  ...values.loader?.reduce((a: Record<string, string>, e) => {
+    const [k, v] = e.split("=");
+    a[k] = v;
+    return a;
+  }, {}),
+};
 
 const spinner = ora().start(positionals.join("; "));
 
@@ -134,10 +143,11 @@ try {
     logLevel: "error",
     target: `node${nodeVersion}`,
     ...customConfig,
+    // loader should override customConfig.loader
+    loader,
     // un-overridable options
     entryPoints: positionals,
     outdir: values.outdir,
-    ...(loader ? { loader } : {}),
   });
   spinner.succeed();
 } catch (error) {

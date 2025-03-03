@@ -13,6 +13,16 @@
           }
         }
       }
+    },
+    {
+      "include": ["pkgs/@libutil/esbuilder/src/index.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
     }
   ]
 }
