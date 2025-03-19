@@ -7,9 +7,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "pkg/*"
-  ],
+  "files": ["pkg/*"],
   "bin": {
     "file-bundler": "pkg/index.js"
   },

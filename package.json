@@ -2,7 +2,7 @@
   "type": "module",
   "private": true,
   "nodeVersion": "22.14.0",
-  "packageManager": "pnpm@10.5.1",
+  "packageManager": "pnpm@10.6.4",
   "pnpm": {
     "requiredScripts": ["build"]
   },
@@ -17,13 +17,13 @@
     "pub": "changeset publish"
   },
   "devDependencies": {
-    "@libutil/esbuilder": "workspace:^",
     "@biomejs/biome": "^1.9.4",
     "@changesets/cli": "^2.28.1",
     "@libconfig/biome": "^0.0.1",
     "@libconfig/typescript": "^0.0.1",
+    "@libutil/esbuilder": "workspace:^",
     "resolve-tspaths": "^0.8.23",
     "rimraf": "^6.0.1",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   }
 }

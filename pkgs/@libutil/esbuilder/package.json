@@ -7,9 +7,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "files": [
-    "pkg/*"
-  ],
+  "files": ["pkg/*"],
   "bin": {
     "esbuilder": "pkg/index.js"
   },
@@ -18,7 +16,7 @@
     "build": "node esbuild"
   },
   "dependencies": {
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.25.1",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.0",
     "handlebars": "^4.7.8",
