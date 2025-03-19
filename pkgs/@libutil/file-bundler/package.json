@@ -1,13 +1,15 @@
 {
   "type": "module",
   "name": "@libutil/file-bundler",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Slee Woo",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "files": ["pkg/*"],
+  "files": [
+    "pkg/*"
+  ],
   "bin": {
     "file-bundler": "pkg/index.js"
   },

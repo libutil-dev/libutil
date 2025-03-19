@@ -1,13 +1,15 @@
 {
   "type": "module",
   "name": "@libutil/esbuilder",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Slee Woo",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "files": ["pkg/*"],
+  "files": [
+    "pkg/*"
+  ],
   "bin": {
     "esbuilder": "pkg/index.js"
   },
