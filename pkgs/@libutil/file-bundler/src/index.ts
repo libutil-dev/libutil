@@ -189,7 +189,7 @@ async function resolveFiles(
         path,
         relativePath,
         folder,
-        importName: `${name.replace(/[^\w]/g, "_")}_${crc(path)}`,
+        importName: `_${name.replace(/[^\w]/g, "_")}_${crc(path)}`,
         importPath: importBase
           ? path.replace(root, importBase).replace(/\.([^.]+)$/, "")
           : `./${name}`,
