@@ -2,7 +2,7 @@
   "type": "module",
   "private": true,
   "nodeVersion": "22.14.0",
-  "packageManager": "pnpm@10.6.4",
+  "packageManager": "pnpm@10.7.0",
   "pnpm": {
     "requiredScripts": ["build"]
   },
