@@ -3,21 +3,21 @@ import handlebars from "handlebars";
 
 export type Options = { noEscape?: boolean };
 
-export function render<Context = object>(
+export const render = <Context = object>(
   template: string,
   context: Context,
   options?: Options,
-): string {
+): string => {
   const { noEscape = true } = { ...options };
   return handlebars.compile(template, { noEscape })(context);
-}
+};
 
-export async function renderToFile<Context = object>(
+export const renderToFile = async <Context = object>(
   file: string,
   template: string,
   context: Context,
   options?: Options & { overwrite?: boolean; format?: boolean },
-): Promise<void> {
+): Promise<void> => {
   const { overwrite, format, ...renderOpts } = { ...options };
   if (overwrite === false) {
     if (await fsx.exists(file)) {
@@ -25,4 +25,4 @@ export async function renderToFile<Context = object>(
     }
   }
   return fsx.outputFile(file, render(template, context, renderOpts), "utf8");
-}
+};
