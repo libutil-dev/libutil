@@ -6,7 +6,7 @@ import glob from "fast-glob";
 import crc from "crc/crc32";
 import { parse } from "smol-toml";
 
-import { render, renderToFile } from "./render";
+import { render, renderToFile } from "@libutil/render";
 
 type ContextFolder = {
   folder: string;
@@ -18,19 +18,16 @@ type Context = {
   folders: Array<ContextFolder>;
 };
 
-type ContextHandler = (data: Context) => unknown;
-
 type Entry = {
+  pattern?: string | Array<string>;
+  template?: string | undefined;
+  outfile?: string | undefined;
   importBase?: string | undefined;
   folders?: Array<string>;
-  pattern?: string | Array<string>;
   filenameReplacements?: Array<[a: string, b: string]>;
   contentReplacements?: Array<[a: string, b: string]>;
   ignore?: string | Array<string>;
   defaultIgnore?: string | Array<string>;
-  template?: string | undefined;
-  outfile?: string | undefined;
-  context?: ContextHandler;
   copyTo?: string | undefined;
 };
 
@@ -60,44 +57,45 @@ const configFile = resolve(
 
 const root = dirname(configFile);
 
-const entries = parse(
+const entriesMap = parse(
   await fsx.readFile(configFile, "utf8"),
-) as unknown as Record<string, Entry>;
+) as unknown as Record<string, Array<Entry>>;
 
-for (const [base, _entry] of Object.entries(entries)) {
-  const entry: Required<Entry> = {
-    template: undefined,
-    outfile: undefined,
-    importBase: undefined,
-    pattern: "**/*.ts",
-    filenameReplacements: [],
-    contentReplacements: [],
-    folders: [],
-    ignore: [],
-    defaultIgnore: ["**/_*"],
-    copyTo: undefined,
-    context: (data) => data,
-    ..._entry,
-  };
+for (const [base, entries] of Object.entries(entriesMap)) {
+  for (const _entry of entries) {
+    const entry: Required<Entry> = {
+      template: undefined,
+      outfile: undefined,
+      importBase: undefined,
+      pattern: "**/*.ts",
+      filenameReplacements: [],
+      contentReplacements: [],
+      folders: [],
+      ignore: [],
+      defaultIgnore: ["**/_*"],
+      copyTo: undefined,
+      ..._entry,
+    };
 
-  const files = await resolveFiles(base, entry);
+    const files = await resolveFiles(base, entry);
 
-  const template = entry.template
-    ? await fsx.readFile(resolve(root, entry.template), "utf8")
-    : "no template provided";
+    const template = entry.template
+      ? await fsx.readFile(resolve(root, entry.template), "utf8")
+      : "no template provided";
 
-  const folderMapper = (folder: string) => ({
-    folder,
-    files: files.filter((f) => f.folder === folder),
-  });
+    const folderMapper = (folder: string) => ({
+      folder,
+      files: files.filter((f) => f.folder === folder),
+    });
 
-  const context = entry.context({
-    files,
-    folders: entry.folders.map(folderMapper),
-  });
+    const context: Context = {
+      files,
+      folders: entry.folders.map(folderMapper),
+    };
 
-  if (entry.outfile) {
-    await renderToFile(entry.outfile, template, context || {});
+    if (entry.outfile) {
+      await renderToFile(entry.outfile, template, context || {});
+    }
   }
 }
 
