@@ -1,13 +1,15 @@
 {
   "type": "module",
   "name": "@libutil/file-generator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "Slee Woo",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "files": ["pkg/*"],
+  "files": [
+    "pkg/*"
+  ],
   "exports": {
     ".": {
       "types": "./pkg/index.d.ts",
