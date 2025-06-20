@@ -1,6 +1,6 @@
 import FormData from "form-data";
 
-import { type FormOptions, buildRequest } from "./base";
+import { buildRequest, type FormOptions } from "./base";
 
 export default async function form<T = unknown>(
   url: string | URL,
@@ -49,8 +49,10 @@ export default async function form<T = unknown>(
 }
 
 // borrowed from https://www.npmjs.com/package/is-stream
-// biome-ignore lint:
-function isStream(stream: any) {
+function isStream(
+  // biome-ignore lint: any
+  stream: any,
+) {
   return (
     stream !== null &&
     typeof stream === "object" &&

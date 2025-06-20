@@ -1,4 +1,4 @@
-import { type DelOptions, buildRequest, stringifyData } from "./base";
+import { buildRequest, type DelOptions, stringifyData } from "./base";
 
 export default function del<T = unknown>(
   url: string | URL,

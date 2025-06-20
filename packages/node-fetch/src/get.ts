@@ -1,4 +1,4 @@
-import { type GetOptions, buildRequest, objToQs } from "./base";
+import { buildRequest, type GetOptions, objToQs } from "./base";
 
 export default function get<T = unknown>(
   _url: string | URL,

@@ -1,11 +1,11 @@
 {
   "extends": ["@libconfig/biome"],
   "files": {
-    "include": ["*.json", "pkgs/*/src/**", "pkgs/*/*.json"]
+    "includes": ["packages/*/src/**/*.ts"]
   },
   "overrides": [
     {
-      "include": ["pkgs/@libutil/esbuilder/src/**/*.ts"],
+      "includes": ["packages/esbuilder/src/**/*.ts"],
       "linter": {
         "rules": {
           "suspicious": {
@@ -15,7 +15,7 @@
       }
     },
     {
-      "include": ["pkgs/@libutil/esbuilder/src/index.ts"],
+      "includes": ["packages/esbuilder/src/index.ts"],
       "linter": {
         "rules": {
           "style": {

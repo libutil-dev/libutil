@@ -1,8 +1,8 @@
 import { resolve } from "node:path";
 
-import fsx from "fs-extra";
-import crc32 from "crc/crc32";
 import { render } from "@libutil/render";
+import crc32 from "crc/crc32";
+import fsx from "fs-extra";
 
 const fileGeneratorQueue: Record<
   string,
@@ -20,7 +20,7 @@ export const fileGenerator = (base: string) => {
 
   type Options = { overwrite?: boolean };
 
-  function generateFile<RenderContext = object>(
+  function generateFile(
     outfile: string,
     render: Render,
     options?: Options,

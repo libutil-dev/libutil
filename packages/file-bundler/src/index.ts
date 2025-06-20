@@ -1,12 +1,11 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { parseArgs } from "node:util";
 
-import fsx from "fs-extra";
-import glob from "fast-glob";
-import crc from "crc/crc32";
-import { parse } from "smol-toml";
-
 import { render, renderToFile } from "@libutil/render";
+import crc from "crc/crc32";
+import glob from "fast-glob";
+import fsx from "fs-extra";
+import { parse } from "smol-toml";
 
 type ContextFolder = {
   folder: string;

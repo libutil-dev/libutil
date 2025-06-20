@@ -1,4 +1,4 @@
-import { type PostOptions, buildRequest, stringifyData } from "./base";
+import { buildRequest, type PostOptions, stringifyData } from "./base";
 
 export default function post<T = unknown>(
   url: string | URL,

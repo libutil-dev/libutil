@@ -1,20 +1,19 @@
-import type { Agent } from "node:https";
 import type { ClientRequest, IncomingMessage } from "node:http";
 import { validateHeaderName, validateHeaderValue } from "node:http";
-
-import { stringify } from "qs";
+import type { Agent } from "node:https";
 
 import type { RedirectableRequest } from "follow-redirects";
 import request from "follow-redirects";
+import { stringify } from "qs";
 
 type Request = RedirectableRequest<ClientRequest, unknown>;
 
 type ResponseHandler = (res: IncomingMessage) => void;
 
 type Resolve = (v: {
-  // biome-ignore lint:
+  // biome-ignore lint: any
   data: any;
-  // biome-ignore lint:
+  // biome-ignore lint: any
   response: any;
 }) => unknown;
 
@@ -86,8 +85,10 @@ export function buildRequest<T>(
         if (options?.json && data) {
           try {
             data = JSON.parse(data);
-            // biome-ignore lint:
-          } catch (error: any) {
+          } catch (
+            // biome-ignore lint: any
+            error: any
+          ) {
             Object.assign(error, { data, response });
             reject(error);
             return;
@@ -133,7 +134,7 @@ export function buildRequest<T>(
       data,
       response,
     }: {
-      // biome-ignore lint:
+      // biome-ignore lint: any
       data?: any;
       response: IncomingMessage;
     },
@@ -145,7 +146,7 @@ export function buildRequest<T>(
         try {
           const json = JSON.parse(data);
           message = json.error || json;
-        } catch (e) {}
+        } catch (_e) {}
 
         if (!message) {
           message = data;
@@ -179,7 +180,7 @@ export function buildRequest<T>(
       const reject = (error: Error) => {
         try {
           request.destroy();
-        } catch (e) {}
+        } catch (_e) {}
 
         return _reject(error);
       };

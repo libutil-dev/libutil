@@ -1,4 +1,4 @@
-import { type PutOptions, buildRequest, stringifyData } from "./base";
+import { buildRequest, type PutOptions, stringifyData } from "./base";
 
 export default function put<T = unknown>(
   url: string | URL,

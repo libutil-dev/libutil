@@ -1,12 +1,12 @@
+import { execFile } from "node:child_process";
 import { resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { execFile } from "node:child_process";
 
 import { build } from "esbuild";
-import { workspaceRoot } from "workspace-root";
 import glob from "fast-glob";
-import ora from "ora";
 import colors from "kleur";
+import ora from "ora";
+import { workspaceRoot } from "workspace-root";
 
 const pkg = await import(resolve(process.cwd(), "./package.json"), {
   with: { type: "json" },
