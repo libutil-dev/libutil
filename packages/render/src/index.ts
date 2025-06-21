@@ -16,14 +16,23 @@ export const renderToFile = async <Context = object>(
   file: string,
   template: string,
   context: Context,
-  options?: Options & { overwrite?: boolean },
+  options?: Options & {
+    overwrite?: boolean;
+    formatters?: Array<(content: string, file: string) => string>;
+  },
 ): Promise<void> => {
-  const { overwrite, ...renderOpts } = { ...options };
+  const { overwrite, formatters, ...renderOpts } = { ...options };
   if (overwrite === false) {
     if (await fsx.exists(file)) {
       return;
     }
   }
   const content = render(template, context, renderOpts);
-  return fsx.outputFile(file, content, "utf8");
+  return fsx.outputFile(
+    file,
+    Array.isArray(formatters)
+      ? formatters.reduce((c, f) => f(c, file), content)
+      : content,
+    "utf8",
+  );
 };

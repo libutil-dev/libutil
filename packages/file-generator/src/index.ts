@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 
 import { render } from "@libutil/render";
-import crc32 from "crc/crc32";
+import crc from "crc/crc32";
 import fsx from "fs-extra";
 
 const fileGeneratorQueue: Record<
@@ -18,7 +18,10 @@ export const fileGenerator = (base: string) => {
     format?: boolean;
   } & import("@libutil/render").Options;
 
-  type Options = { overwrite?: boolean };
+  type Options = {
+    overwrite?: boolean;
+    formatters?: Array<(content: string, file: string) => string>;
+  };
 
   function generateFile(
     outfile: string,
@@ -39,23 +42,30 @@ export const fileGenerator = (base: string) => {
     const file = resolve(base, outfile);
 
     const worker = async () => {
-      const text =
+      const renderedContent =
         typeof content === "string"
           ? content
           : render(content.template, content.context);
 
-      // two fs calls (check existence and read file)
-      // is an acceptable price for not triggering watchers on every render
+      const formattedContent = Array.isArray(options?.formatters)
+        ? options.formatters.reduce((c, f) => f(c, file), renderedContent)
+        : renderedContent;
+
+      /**
+       * Performing two filesystem operations (existence check and read)
+       * is a reasonable tradeoff to avoid unnecessarily touching the file,
+       * which could otherwise trigger file watchers.
+       * */
       if (await fsx.exists(file)) {
         if (options?.overwrite === false) {
           return;
         }
-        if (crc32(text) === crc32(await fsx.readFile(file, "utf8"))) {
+        if (crc(formattedContent) === crc(await fsx.readFile(file, "utf8"))) {
           return;
         }
       }
 
-      await fsx.outputFile(file, text, "utf8");
+      await fsx.outputFile(file, formattedContent, "utf8");
     };
 
     if (Array.isArray(fileGeneratorQueue[file])) {
