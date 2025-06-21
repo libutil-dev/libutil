@@ -20,7 +20,6 @@ export const fileGenerator = (
   type Render = {
     template: string;
     context: object;
-    format?: boolean;
   } & import("@libutil/render").Options;
 
   type Options = {

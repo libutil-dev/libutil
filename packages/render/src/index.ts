@@ -3,6 +3,8 @@ import handlebars from "handlebars";
 
 export type Options = { noEscape?: boolean };
 
+type Formatter = (content: string, file: string) => string;
+
 export const render = <Context = object>(
   template: string,
   context: Context,
@@ -12,27 +14,38 @@ export const render = <Context = object>(
   return handlebars.compile(template, { noEscape })(context);
 };
 
+export const renderAsFile = <Context = object>(
+  file: string,
+  template: string,
+  context: Context,
+  options?: Options & {
+    formatters?: Array<Formatter>;
+  },
+): string => {
+  const { formatters, ...renderOpts } = { ...options };
+  const content = render(template, context, renderOpts);
+  return Array.isArray(formatters)
+    ? formatters.reduce((c, f) => f(c, file), content)
+    : content;
+};
+
 export const renderToFile = async <Context = object>(
   file: string,
   template: string,
   context: Context,
   options?: Options & {
     overwrite?: boolean;
-    formatters?: Array<(content: string, file: string) => string>;
+    formatters?: Array<Formatter>;
   },
 ): Promise<void> => {
-  const { overwrite, formatters, ...renderOpts } = { ...options };
-  if (overwrite === false) {
+  if (options?.overwrite === false) {
     if (await fsx.exists(file)) {
       return;
     }
   }
-  const content = render(template, context, renderOpts);
-  return fsx.outputFile(
+  await fsx.outputFile(
     file,
-    Array.isArray(formatters)
-      ? formatters.reduce((c, f) => f(c, file), content)
-      : content,
+    renderAsFile(file, template, context, options),
     "utf8",
   );
 };
