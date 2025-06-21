@@ -9,7 +9,12 @@ const fileGeneratorQueue: Record<
   Array<() => Promise<void>> | undefined
 > = {};
 
-export const fileGenerator = (base: string) => {
+export const fileGenerator = (
+  base: string,
+  baseOptions?: {
+    formatters?: Array<(content: string, file: string) => string>;
+  },
+) => {
   const generatedFiles = new Set<string>();
 
   type Render = {
@@ -20,7 +25,6 @@ export const fileGenerator = (base: string) => {
 
   type Options = {
     overwrite?: boolean;
-    formatters?: Array<(content: string, file: string) => string>;
   };
 
   function generateFile(
@@ -47,8 +51,8 @@ export const fileGenerator = (base: string) => {
           ? content
           : render(content.template, content.context);
 
-      const formattedContent = Array.isArray(options?.formatters)
-        ? options.formatters.reduce((c, f) => f(c, file), renderedContent)
+      const formattedContent = Array.isArray(baseOptions?.formatters)
+        ? baseOptions.formatters.reduce((c, f) => f(c, file), renderedContent)
         : renderedContent;
 
       /**
