@@ -1,0 +1,3 @@
+---
+"@libutil/file-generator": patch
+---
