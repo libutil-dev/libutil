@@ -23,7 +23,13 @@ export const fileGenerator = (
   } & import("@libutil/render").Options;
 
   type Options = {
-    overwrite?: boolean;
+    /**
+     * Controls whether to overwrite an existing file.
+     * - `false`: skip writing if the file already exists
+     * - `true` (default): always overwrite
+     * - function: custom logic to decide whether to overwrite, based on current file content
+     */
+    overwrite?: boolean | ((fileContent: string) => boolean);
   };
 
   function generateFile(
@@ -55,15 +61,19 @@ export const fileGenerator = (
         : renderedContent;
 
       /**
-       * Performing two filesystem operations (existence check and read)
-       * is a reasonable tradeoff to avoid unnecessarily touching the file,
-       * which could otherwise trigger file watchers.
+       * Two fs calls (exists + read) are worth it to avoid touching the file
+       * and triggering watchers unnecessarily.
        * */
       if (await fsx.exists(file)) {
-        if (options?.overwrite === false) {
+        const { overwrite = true } = { ...options };
+        if (overwrite === false) {
           return;
         }
-        if (crc(formattedContent) === crc(await fsx.readFile(file, "utf8"))) {
+        const fileContent = await fsx.readFile(file, "utf8");
+        if (typeof overwrite === "function" && !overwrite(fileContent)) {
+          return;
+        }
+        if (crc(formattedContent) === crc(fileContent)) {
           return;
         }
       }
