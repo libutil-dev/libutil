@@ -1,8 +1,21 @@
+import { join } from "node:path";
+
 import crc from "crc/crc32";
 import fsx from "fs-extra";
 import handlebars from "handlebars";
 
 export type Options = { noEscape?: boolean };
+
+export type FactoryOptions = Options & {
+  /**
+   * Controls whether to overwrite an existing file.
+   * - `false`: skip writing if the file already exists
+   * - `true` (default): always overwrite
+   * - function: custom logic to decide whether to overwrite, based on current file content
+   */
+  overwrite?: boolean | ((fileContent: string) => boolean);
+  formatters?: Array<Formatter>;
+};
 
 type Formatter = (content: string, file: string) => string;
 
@@ -19,9 +32,7 @@ export const renderAsFile = <Context = object>(
   file: string,
   template: string,
   context: Context,
-  options?: Options & {
-    formatters?: Array<Formatter>;
-  },
+  options?: Omit<FactoryOptions, "overwrite">,
 ): string => {
   const { formatters, ...renderOpts } = { ...options };
   const content = render(template, context, renderOpts);
@@ -34,16 +45,7 @@ export const renderToFile = async <Context = object>(
   file: string,
   template: string,
   context: Context,
-  options?: Options & {
-    /**
-     * Controls whether to overwrite an existing file.
-     * - `false`: skip writing if the file already exists
-     * - `true` (default): always overwrite
-     * - function: custom logic to decide whether to overwrite, based on current file content
-     */
-    overwrite?: boolean | ((fileContent: string) => boolean);
-    formatters?: Array<Formatter>;
-  },
+  options?: FactoryOptions,
 ): Promise<void> => {
   const content = renderAsFile(file, template, context, options);
 
@@ -66,4 +68,20 @@ export const renderToFile = async <Context = object>(
   }
 
   await fsx.outputFile(file, content, "utf8");
+};
+
+export const renderFactory = (outdir: string, options?: FactoryOptions) => {
+  return {
+    async renderToFile<Context = object>(
+      file: string,
+      template: string,
+      context: Context,
+      selfOptions?: FactoryOptions,
+    ) {
+      return renderToFile(join(outdir, file), template, context, {
+        ...options,
+        ...selfOptions,
+      });
+    },
+  };
 };
